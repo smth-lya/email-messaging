@@ -1,6 +1,8 @@
+using Homework.Notifications.Services.Abstractions;
+
 namespace Homework.Notifications.Services;
 
-public class EmailSender
+public class EmailSender : IEmailSender
 {
     private readonly NetworkClient _client;
     private readonly MessageFactory _factory;
@@ -11,10 +13,10 @@ public class EmailSender
         _factory = factory;
     }
     
-    public void SendEmail(string to, string subject, string body)
+    public async Task SendEmailAsync(string email)
     {
-        var email = _factory.Create(to);
-        _client.SendEmail(email);
-        Console.WriteLine($"Email sent to {to}");
+        var message = _factory.Create(email);
+        await _client.SendEmailAsync(message);
+        Console.WriteLine($"Email sent to {email}");
     }
 }
