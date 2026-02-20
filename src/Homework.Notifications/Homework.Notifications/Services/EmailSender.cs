@@ -15,7 +15,7 @@ public class EmailSender : IEmailSender
     
     public async Task SendEmailAsync(string email)
     {
-        var message = _factory.Create(email);
+        var message = await _factory.CreateAsync(email);
         await _client.SendEmailAsync(message);
         Console.WriteLine($"Email sent to {email}");
     }

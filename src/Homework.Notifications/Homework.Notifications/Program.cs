@@ -1,6 +1,7 @@
 using Homework.Notifications.Configurations;
 using Homework.Notifications.Extensions;
 using Homework.Notifications.Services.Abstractions;
+using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +14,7 @@ builder.Services.AddEmailSender(builder.Configuration);
 
 var app = builder.Build();
 
-//app.MapGet("/users/notify/{email}", NotifyUser);
-app.MapGet("/", (EmailServerSettings d) => $"Hello World! {d.EnableSsl} {d.Host}:{d.Port} {d.Password}");
+app.MapGet("/users/notify/{email}", NotifyUser);
 
 app.Run();
 
