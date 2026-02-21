@@ -28,7 +28,7 @@
   "EmailSettings": {                        // Оставить пустым, заполнить через User Secrets
     "SmtpServer": "smtp.yandex.ru",         // SMTP-сервер
     "SmtpPort": 25,                         // Порт
-    "SmtpUser": "your-email@yandex.ru",     // Логин (оставить пустым, заполнить через User Secrets)
+    "SmtpUser": "your-email@yandex.ru",     // Логин
     "SmtpPassword": "",                     // Пароль
     "SmtpReply": "noreply@yourdomain.com",  // Обратный адрес
     "EnableSsl": true
