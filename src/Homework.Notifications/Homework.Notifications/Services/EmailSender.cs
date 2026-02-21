@@ -1,3 +1,4 @@
+using Homework.Notifications.Models;
 using Homework.Notifications.Services.Abstractions;
 
 namespace Homework.Notifications.Services;
@@ -5,18 +6,24 @@ namespace Homework.Notifications.Services;
 public class EmailSender : IEmailSender
 {
     private readonly NetworkClient _client;
-    private readonly MessageFactory _factory;
+    private readonly HtmlMessageFactory _factory;
 
-    public EmailSender(MessageFactory factory, NetworkClient client)
+    public EmailSender(HtmlMessageFactory factory, NetworkClient client)
     {
         _client = client;
         _factory = factory;
     }
     
-    public async Task SendEmailAsync(string email)
+    public async Task SendEmailAsync(MessageData data)
     {
-        var message = await _factory.CreateAsync(email);
-        await _client.SendEmailAsync(message);
-        Console.WriteLine($"Email sent to {email}");
+        var message = await _factory.CreateAsync(data);
+        try
+        {
+            await _client.SendEmailAsync(message);
+        }
+        finally
+        {
+            message.Dispose();
+        }
     }
 }

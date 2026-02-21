@@ -1,6 +1,8 @@
+using Homework.Notifications.Models;
+
 namespace Homework.Notifications.Services.Abstractions;
 
 public interface IEmailSender
 {
-    Task SendEmailAsync(string email);
+    Task SendEmailAsync(MessageData data);
 }

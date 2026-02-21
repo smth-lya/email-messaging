@@ -1,4 +1,3 @@
 <Solution>
   <Project Path="Homework.Notifications/Homework.Notifications.csproj" />
-  <Project Path="Test/Test.csproj" />
 </Solution>

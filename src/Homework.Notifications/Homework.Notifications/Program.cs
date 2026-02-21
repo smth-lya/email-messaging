@@ -1,7 +1,7 @@
-using Homework.Notifications.Configurations;
 using Homework.Notifications.Extensions;
+using Homework.Notifications.Models;
 using Homework.Notifications.Services.Abstractions;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +20,9 @@ app.Run();
 
 return;
 
-async Task<string> NotifyUser(string email, IEmailSender sender)
+async Task<string> NotifyUser(string email, IEmailSender sender, [FromQuery] string? mailTemplate)
 {
-    await sender.SendEmailAsync(email);
+    var messageData = new MessageData(email, mailTemplate ?? "Welcome");
+    await sender.SendEmailAsync(messageData);
     return "Email sent successfully!";
 }

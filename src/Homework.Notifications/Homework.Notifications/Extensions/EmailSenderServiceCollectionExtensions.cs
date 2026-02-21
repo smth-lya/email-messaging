@@ -12,23 +12,24 @@ public static class EmailSenderServiceCollectionExtensions
     {
         public IServiceCollection AddEmailSender(IConfiguration configuration)
         {
-            services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<NetworkClient>();
-            services.AddScoped<SmtpClient>();
-            services.AddSingleton<MessageFactory>();
-
-            services.AddSingleton<HtmlRenderer>(); // Подумать стоит ли изменить жизненный цикл на Scoped
+            services.AddScoped<HtmlMessageFactory>();
+            services.AddScoped<SmtpClient>(provider => provider.GetRequiredService<ISmtpClientFactory>().CreateClient());
+            services.AddScoped<IEmailSender, EmailSender>();
             
-            services.ConfigureSettings<EmailServerSettings>(configuration);
+            services.AddSingleton<HtmlRenderer>(); 
+            services.AddSingleton<ISmtpClientFactory, SmtpClientFactory>();
+            
             services.ConfigureSettings<EmailSettings>(configuration);
-        
+            services.ConfigureSettings<NotificationTemplatesConfiguration>(configuration, "NotificationTemplates");
+
             return services;
         }
 
-        private void ConfigureSettings<T>(IConfiguration configuration) where T : class, new()
+        private void ConfigureSettings<T>(IConfiguration configuration, string? name = null) where T : class, new()
         {
             var settings = new T();
-            configuration.GetSection(typeof(T).Name).Bind(settings);
+            configuration.GetSection(name ?? typeof(T).Name).Bind(settings);
             services.AddSingleton(settings);
         }
     }
