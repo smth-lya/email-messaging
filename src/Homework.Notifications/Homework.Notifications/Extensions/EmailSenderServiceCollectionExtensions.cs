@@ -1,4 +1,6 @@
 using System.Net.Mail;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Homework.Notifications.Configurations;
 using Homework.Notifications.Services;
 using Homework.Notifications.Services.Abstractions;
@@ -13,12 +15,16 @@ public static class EmailSenderServiceCollectionExtensions
         public IServiceCollection AddEmailSender(IConfiguration configuration)
         {
             services.AddScoped<NetworkClient>();
-            services.AddScoped<HtmlMessageFactory>();
             services.AddScoped<SmtpClient>(provider => provider.GetRequiredService<ISmtpClientFactory>().CreateClient());
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IMessageFactory, HtmlMessageFactory>();
             
             services.AddSingleton<HtmlRenderer>(); 
             services.AddSingleton<ISmtpClientFactory, SmtpClientFactory>();
+
+            services.AddHangfire(config
+                => config.UseMemoryStorage());
+            services.AddHangfireServer();
             
             services.ConfigureSettings<EmailSettings>(configuration);
             services.ConfigureSettings<NotificationTemplatesConfiguration>(configuration, "NotificationTemplates");

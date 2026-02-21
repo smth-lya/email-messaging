@@ -1,28 +1,25 @@
+using Hangfire;
 using Homework.Notifications.Extensions;
-using Homework.Notifications.Models;
-using Homework.Notifications.Services.Abstractions;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsDevelopment())
-{
     builder.Configuration.AddUserSecrets<Program>();
-}
 
 builder.Services.AddEmailSender(builder.Configuration);
 
+builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+
 var app = builder.Build();
 
-app.MapGet("/users/notify/{email}", NotifyUser);
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseHangfireDashboard();
+}
 
+app.MapEmailEndpoints();
 app.Run();
 
-return;
-
-async Task<string> NotifyUser(string email, IEmailSender sender, [FromQuery] string? mailTemplate)
-{
-    var messageData = new MessageData(email, mailTemplate ?? "Welcome");
-    await sender.SendEmailAsync(messageData);
-    return "Email sent successfully!";
-}
