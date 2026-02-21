@@ -2,7 +2,7 @@
 
 **Homework.Notifications** - решение для отправки email-уведомлений с поддержкой HTML-шаблонов, массовой рассылки и отложенной доставки.
 
-Сервис использует [SmptClient](https://learn.microsoft.com/ru-ru/dotnet/api/system.net.mail.smtpclient?view=net-10.0) [obsolete, но для своих задач справился] и [HtmlRenderer](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.components.web.htmlrenderer?view=aspnetcore-10.0) из части Blazor, который рендерит письма через Razor Components.
+Сервис использует [SmptClient](https://learn.microsoft.com/ru-ru/dotnet/api/system.net.mail.smtpclient?view=net-10.0) [obsolete, но для своих задач справился] и [HtmlRenderer](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.components.web.htmlrenderer?view=aspnetcore-10.0) из части Blazor, который рендерит письма через Razor Components (см. [NotificationMessage.razor](templates/NotificationMessage.razor)).
 
 ---
 
