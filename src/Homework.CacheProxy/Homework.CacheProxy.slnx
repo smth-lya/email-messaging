@@ -1,3 +1,8 @@
 <Solution>
-  <Project Path="Homework.CacheProxy/Homework.CacheProxy.csproj" />
+  <Folder Name="/src/">
+    <File Path=".env" />
+    <File Path="docker-compose.yaml" />
+    <File Path="Dockerfile" />
+    <Project Path="Homework.Api/Homework.Api.csproj" />
+  </Folder>
 </Solution>
