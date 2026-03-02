@@ -4,7 +4,7 @@
 
 Сервис использует [SmptClient](https://learn.microsoft.com/ru-ru/dotnet/api/system.net.mail.smtpclient?view=net-10.0) [obsolete, но для своих задач справился] и [HtmlRenderer](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.components.web.htmlrenderer?view=aspnetcore-10.0) из части Blazor, который рендерит письма через Razor Components (см. [NotificationMessage.razor](templates/NotificationMessage.razor)).
 
-![Inbox Overview](../../../docs/inbox-notifications-overview.png)
+![Inbox Overview](../../../docs/notifications/inbox-notifications-overview.png)
 _Пример того, как письма выглядят в почтовом клиенте_
 
 ---
@@ -27,16 +27,16 @@ _Пример того, как письма выглядят в почтовом
 <div align="center">
   <table>
     <tr>
-      <td width="500"><img src="../../../docs/email-welcome.png" width="480" alt="Приветственное письмо"/></td>
-      <td width="500"><img src="../../../docs/email-password-reset.png" width="480" alt="Сброс пароля"/></td>
+      <td width="500"><img src="../../../docs/notifications/email-welcome.png" width="480" alt="Приветственное письмо"/></td>
+      <td width="500"><img src="../../../docs/notifications/email-password-reset.png" width="480" alt="Сброс пароля"/></td>
     </tr>
     <tr>
       <td align="center" style="padding-bottom: 40px; font-size: 1.1em;"><strong> Приветственное письмо</strong><br><span style="color: #666;">после регистрации</span></td>
       <td align="center" style="padding-bottom: 40px; font-size: 1.1em;"><strong> Сброс пароля</strong><br><span style="color: #666;">восстановление доступа</span></td>
     </tr>
     <tr>
-      <td width="500"><img src="../../../docs/email-purchase-confirmation.png" width="480" alt="Подтверждение покупки"/></td>
-      <td width="500"><img src="../../../docs/email-security-alert.png" width="480" alt="Оповещение безопасности"/></td>
+      <td width="500"><img src="../../../docs/notifications/email-purchase-confirmation.png" width="480" alt="Подтверждение покупки"/></td>
+      <td width="500"><img src="../../../docs/notifications/email-security-alert.png" width="480" alt="Оповещение безопасности"/></td>
     </tr>
     <tr>
       <td align="center" style="font-size: 1.1em;"><strong> Подтверждение покупки</strong><br><span style="color: #666;">детали заказа</span></td>
