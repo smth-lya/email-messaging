@@ -1,3 +1,7 @@
-namespace Homework.Api;
+namespace Homework.Api.Configurations;
 
-public record ProductCacheSettings(int TTL, string KeyPrefix);
+public class ProductCacheSettings
+{
+    public int TTL { get; set; }
+    public string KeyPrefix { get; set; }
+}

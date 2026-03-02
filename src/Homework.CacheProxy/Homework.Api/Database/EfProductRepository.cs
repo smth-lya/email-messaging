@@ -1,4 +1,6 @@
-namespace Homework.Api;
+using Homework.Api.Models;
+
+namespace Homework.Api.Database;
 
 public class EfProductRepository : IProductRepository
 {
@@ -15,17 +17,19 @@ public class EfProductRepository : IProductRepository
         return await _dbContext.Products.FindAsync([id], cancellationToken: cancellationToken);
     }
 
-    public async Task AddAsync(Product product, CancellationToken cancellationToken = default)
+    public async Task<Product> AddAsync(Product product, CancellationToken cancellationToken = default)
     {
         var existing = await _dbContext.Products.FindAsync([product.Id], cancellationToken: cancellationToken);
         
         if (existing is not null)
         {
-            return;
+            return existing;
         }
         
         await _dbContext.Products.AddAsync(product, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        
+        return product;
     }
 
     public async Task UpdateAsync(Product product, CancellationToken cancellationToken = default)

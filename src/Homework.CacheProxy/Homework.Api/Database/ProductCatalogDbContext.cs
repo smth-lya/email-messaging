@@ -1,6 +1,7 @@
+using Homework.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Homework.Api;
+namespace Homework.Api.Database;
 
 public class ProductCatalogDbContext : DbContext
 {

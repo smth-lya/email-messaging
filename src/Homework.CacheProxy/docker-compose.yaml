@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: hw-api
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:80;
       ASPNETCORE_Kestrel__Endpoints__Http__Url: http://+:80
       ConnectionStrings__PostgresConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};"
