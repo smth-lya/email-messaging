@@ -25,7 +25,7 @@ public class CrudBenchmark : IAsyncDisposable
     [GlobalSetup]
     public async Task Setup()
     {
-        _databaseManager = new DatabaseManager(_connectionString, _random);
+        _databaseManager = new DatabaseManager(MasterConnectionString, _random);
 
         await _databaseManager.CreateDatabaseAsync();
         await _databaseManager.CreateSchemaAsync();
@@ -73,7 +73,7 @@ public class CrudBenchmark : IAsyncDisposable
         return await connection
             .QueryFirstOrDefaultAsync<Product>(
                 "SELECT * FROM Products WHERE ProductId=@Id LIMIT 1", 
-                new { _testProductId });
+                new { Id = _testProductId });
     }
 
     [GlobalCleanup]
