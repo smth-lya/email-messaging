@@ -1,10 +1,9 @@
-using System.Collections.ObjectModel;
 using Bogus;
 using Dapper;
 using Homework.Benchmarks.Models;
 using Npgsql;
 
-namespace Homework.Benchmarks;
+namespace Homework.Benchmarks.Generators;
 
 public class CategoriesGenerator
 {

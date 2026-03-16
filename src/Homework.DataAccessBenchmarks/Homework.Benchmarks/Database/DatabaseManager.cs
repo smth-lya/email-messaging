@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace Homework.Benchmarks;
+namespace Homework.Benchmarks.Database;
 
 public class DatabaseManager : IAsyncDisposable
 {

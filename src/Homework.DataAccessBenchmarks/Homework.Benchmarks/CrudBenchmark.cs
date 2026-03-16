@@ -2,26 +2,21 @@ using System.Data;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Dapper;
-using Homework.Benchmarks.EfCore;
+using Homework.Benchmarks.Database;
+using Homework.Benchmarks.Generators;
 using Homework.Benchmarks.Models;
 using Microsoft.EntityFrameworkCore;
-using NHibernate;
-using NHibernate.Cfg;
-using NHibernate.Dialect;
 using Npgsql;
 
 namespace Homework.Benchmarks;
 
+[MemoryDiagnoser, ThreadingDiagnoser]
+[CategoriesColumn, GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [RPlotExporter]
-[MemoryDiagnoser]
-[CategoriesColumn]
-[ThreadingDiagnoser]
 [KeepBenchmarkFiles]
-[CsvMeasurementsExporter]
-[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 public class CrudBenchmark
 {
-    private const string MasterConnectionString = "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=2546";
+    private const string MasterConnectionString = "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=postgres";
     
     private readonly Random _random = new(100);
 

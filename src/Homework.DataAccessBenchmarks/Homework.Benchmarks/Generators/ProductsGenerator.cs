@@ -1,16 +1,14 @@
-using System.Data;
 using Bogus;
 using Dapper;
 using Homework.Benchmarks.Models;
 using Npgsql;
 
-namespace Homework.Benchmarks;
+namespace Homework.Benchmarks.Generators;
 
 public class ProductsGenerator
 {
     private readonly string _connectionString;
     private readonly List<Guid> _productIds = new();
-    private readonly List<Guid> _categoryIds;
     private readonly Faker<Product> _productGenerator;
 
     private readonly Random _random;
@@ -20,14 +18,13 @@ public class ProductsGenerator
         Randomizer.Seed = random;
         _random = random;
         _connectionString = connectionString;
-        _categoryIds = existingCategoryIds;
         
         _productGenerator = new Faker<Product>()
             .RuleFor(p => p.ProductId, f => f.Random.Guid())
             .RuleFor(p => p.Name, f => f.Commerce.ProductName())
             .RuleFor(p => p.Description, f => f.Commerce.ProductDescription())
             .RuleFor(p => p.Price, f => f.Random.Decimal(0.0m, 1000.0m))
-            .RuleFor(p => p.CategoryId, f => f.PickRandom(_categoryIds))
+            .RuleFor(p => p.CategoryId, f => f.PickRandom(existingCategoryIds))
             .RuleFor(p => p.Stock, f => f.Random.Int(0, 500))
             .RuleFor(p => p.IsDeleted, f => f.Random.Bool(0.1f));
     }

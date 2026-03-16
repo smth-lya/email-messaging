@@ -1,7 +1,7 @@
 using Homework.Benchmarks.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Homework.Benchmarks.EfCore;
+namespace Homework.Benchmarks.Database;
 
 public class ApplicationDbContext : DbContext
 {
