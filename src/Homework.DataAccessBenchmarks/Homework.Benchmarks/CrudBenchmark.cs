@@ -9,7 +9,7 @@ namespace Homework.Benchmarks;
 
 [MemoryDiagnoser]
 [KeepBenchmarkFiles]
-public class CrudBenchmark : IAsyncDisposable
+public class CrudBenchmark
 {
     private const string MasterConnectionString = "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=postgres";
     
@@ -33,28 +33,12 @@ public class CrudBenchmark : IAsyncDisposable
         _connectionString = _databaseManager.ConnectionString;
 
         _categoryGenerator = new CategoriesGenerator(_connectionString, _random);
-        await _categoryGenerator.GenerateCategories(20);
+        await _categoryGenerator.GenerateCategories(200);
         
         _productsGenerator = new ProductsGenerator(_connectionString, _random, _categoryGenerator.GetCategoryIds().ToList());
-        await _productsGenerator.GenerateProducts(1000);
+        await _productsGenerator.GenerateProducts(10000);
 
         _testProductId = _productsGenerator.GetRandomProductId();
-    }
-
-    private async Task WarmUpAsync()
-    {
-        await using var efContext = new ApplicationDbContext(_connectionString);
-        await efContext.Products
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.ProductId == _testProductId);
-        
-        await using var dapperConnection = new NpgsqlConnection(_connectionString);
-        await dapperConnection.QueryFirstOrDefaultAsync<Product>(
-            "SELECT * FROM Products WHERE ProductId = @Id LIMIT 1", 
-            new { Id = _testProductId });
-        
-        await using var statConnection = new NpgsqlConnection(_connectionString);
-        await statConnection.ExecuteAsync("ANALYZE Products; ANALYZE Categories;");
     }
     
     [Benchmark(Baseline = true)]
@@ -79,13 +63,6 @@ public class CrudBenchmark : IAsyncDisposable
     [GlobalCleanup]
     public async Task Cleanup()
     {
-        await _productsGenerator.CleanupProducts();
-        await _categoryGenerator.CleanupCategories();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _databaseManager.DisposeAsync();
-        GC.SuppressFinalize(this);
+        await _databaseManager.DropDatabaseAsync();
     }
 }

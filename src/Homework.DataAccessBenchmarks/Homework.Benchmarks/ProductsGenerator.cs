@@ -61,7 +61,7 @@ public class ProductsGenerator
             return;
         
         await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.ExecuteAsync("DELETE FROM Products WHERE ProductId IN @Ids", new { Ids = _productIds });
+        await connection.ExecuteAsync("DELETE FROM Products WHERE ProductId = ANY(@Ids)", new { Ids = _productIds });
         
         _productIds.Clear();
     }
