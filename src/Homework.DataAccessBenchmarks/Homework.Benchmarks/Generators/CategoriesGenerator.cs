@@ -12,8 +12,11 @@ public class CategoriesGenerator
     private readonly List<Guid> _categoryIds = new();
     private readonly Faker<Category> _categoryGenerator;
 
+    private readonly Random _random;
+    
     public CategoriesGenerator(string connectionString, Random random)
     {
+        _random = random;
         _connectionString = connectionString;
         Randomizer.Seed = random;
         
@@ -35,6 +38,14 @@ public class CategoriesGenerator
     }
 
     public IReadOnlyList<Guid> GetCategoryIds() => _categoryIds.AsReadOnly();
+    
+    public Guid GetRandomCategoryId()
+    {
+        if (_categoryIds.Count == 0)
+            throw new InvalidOperationException("No products have been generated yet");
+            
+        return _categoryIds[_random.Next(_categoryIds.Count)];
+    }
     
     public async Task CleanupCategories()
     {

@@ -46,6 +46,9 @@ public class ProductsGenerator
         _productIds.AddRange(generatedProducts.Select(p => p.ProductId));
     }
 
+    public Product GenerateProduct()
+        => _productGenerator.Generate();
+    
     public Guid GetRandomProductId()
     {
         if (_productIds.Count == 0)
