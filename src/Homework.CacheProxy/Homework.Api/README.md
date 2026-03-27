@@ -50,6 +50,50 @@ private async Task InvalidateAsync(Guid id)
 }
 ```
 
+#### 4. Структурированное логирование (новое)
+
+##### StructuredLoggingMiddleware
+Middleware для сквозного отслеживания HTTP-запросов с метриками производительности:
+
+**Функциональность:**
+- Генерация уникального `X-Correlation-ID` для каждого запроса
+- Измерение времени выполнения запроса (Stopwatch)
+- Перехват исключений с полным стеком вызовов
+- Автоматическое добавление Correlation ID в заголовки ответа
+
+![structured-logging-example.png](../../../docs/cache-proxy/structured-logging-example.png)
+*Демонстрация структурированного логирования: Correlation ID, время выполнения, попадания и промахи кэша*
+
+**Пример логов:**
+```
+[14:25:33 INF] Request started: CorrelationId=a1b2c3d4-e5f6-47g8-h9i0-j1k2l3m4n5o6, 
+               Method=GET, Path=/product/123
+[14:25:33 INF] Request completed: CorrelationId=a1b2c3d4-e5f6-47g8-h9i0-j1k2l3m4n5o6, 
+               Method=GET, Path=/product/123, StatusCode=200, ElapsedMs=12, ContentLength=145
+```
+
+##### ICacheOperationLogger
+Специализированный логгер для операций кэша с типобезопасностью:
+
+**Интерфейс:**
+```csharp
+public interface ICacheOperationLogger
+{
+    void LogCacheHit(string key, long elapsedMs);      // Попадание из Redis
+    void LogCacheMiss(string key, long elapsedMs);     // Промах - запрос в БД
+    void LogCacheInvalidation(string key, string operation);  // Инвалидация кэша
+    void LogCacheError(string key, Exception ex);      // Ошибки операций
+}
+```
+
+**Пример логов кэша:**
+```
+[14:25:33 INF] Cache hit: Key=product:123, ElapsedMs=2, Level=CACHE
+[14:25:40 INF] Cache miss: Key=product:456, ElapsedMs=18, Level=DATABASE
+[14:25:50 INF] Cache invalidated: Key=product:789, Operation=UPDATE
+[14:26:00 WRN] Cache operation failed: Key=product:999, ExceptionType=RedisConnectionException
+```
+
 ### API Endpoints
 
 | Метод | URL | Описание |
@@ -68,3 +112,16 @@ docker-compose up -d
 После запуска:
 - API: http://localhost:5000
 - Swagger: http://localhost:5000/swagger
+
+### Просмотр логов
+
+```bash
+# Логи контейнера API
+docker logs hw-api -f
+
+# Или если запущено локально
+dotnet run --project Homework.Api/Homework.Api.csproj
+```
+
+ 
+ 
