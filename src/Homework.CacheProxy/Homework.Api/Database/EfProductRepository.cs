@@ -41,7 +41,7 @@ public class EfProductRepository : IProductRepository
             return;
         }
 
-        _dbContext.Products.Update(product);
+        _dbContext.Entry(existing).CurrentValues.SetValues(product);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
