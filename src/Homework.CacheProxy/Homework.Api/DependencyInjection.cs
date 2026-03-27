@@ -1,5 +1,6 @@
 using Homework.Api.Configurations;
 using Homework.Api.Database;
+using Homework.Api.Logging;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -18,6 +19,8 @@ public static class DependencyInjection
         services.AddDbContext<ProductCatalogDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
 
+        services.AddScoped<ICacheOperationLogger, CacheOperationLogger>();
+        
         services.AddScoped<EfProductRepository>();
         services.AddScoped<IProductRepository, RedisCachedProductRepository>();
         

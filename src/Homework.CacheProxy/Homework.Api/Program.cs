@@ -1,12 +1,23 @@
 using Homework.Api;
 using System.Reflection;
 using Homework.Api.Database;
+using Homework.Api.Logging;
 using Homework.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCacheProxy(builder.Configuration);
+
+builder.Host.UseSerilog((context, services, config) => config
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Application", "CacheProxy")
+    .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] CorrelationId={CorrelationId} {Message:lj}{NewLine}{Exception}")
+);
 
 if (builder.Environment.IsDevelopment())
 {
@@ -20,6 +31,8 @@ if (builder.Environment.IsDevelopment())
 }
 
 var app = builder.Build();
+
+app.UseStructuredLogging();
 
 app.MapPost("/product/create", async (CreateProduct product, IProductRepository repository) =>
     await repository.AddAsync(new Product(Guid.NewGuid(), product.Name, product.Price)));
