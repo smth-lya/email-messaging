@@ -50,7 +50,7 @@ private async Task InvalidateAsync(Guid id)
 }
 ```
 
-#### 4. Структурированное логирование (новое)
+#### 4. Структурированное логирование
 
 ##### StructuredLoggingMiddleware
 Middleware для сквозного отслеживания HTTP-запросов с метриками производительности:
