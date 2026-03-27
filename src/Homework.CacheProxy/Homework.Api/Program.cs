@@ -10,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCacheProxy(builder.Configuration);
 
+builder.Host.UseSerilog((context, config) =>
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
+
 builder.Host.UseSerilog((context, services, config) => config
     .MinimumLevel.Information()
     .Enrich.FromLogContext()
@@ -24,9 +29,9 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(opts =>
     {
-        var file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        opts.IncludeXmlComments(
-            Path.Combine(AppContext.BaseDirectory, file));
+        // var file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        // opts.IncludeXmlComments(
+        //     Path.Combine(AppContext.BaseDirectory, file));
     });
 }
 

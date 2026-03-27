@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Serilog.Context;
 
 namespace Homework.Api.Logging;
 
@@ -7,7 +8,9 @@ public class StructuredLoggingMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<StructuredLoggingMiddleware> _logger;
 
-    public StructuredLoggingMiddleware(RequestDelegate next, ILogger<StructuredLoggingMiddleware> logger)
+    public StructuredLoggingMiddleware(
+        RequestDelegate next,
+        ILogger<StructuredLoggingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -20,48 +23,59 @@ public class StructuredLoggingMiddleware
             : Guid.NewGuid().ToString();
         
         context.Items["CorrelationId"] = correlationId;
-        context.Response.Headers.Append("X-Correlation-ID", correlationId);
+        context.Response.Headers["X-Correlation-ID"] = correlationId;
 
-        var sw = Stopwatch.StartNew();
-        var originalBodyStream = context.Response.Body;
-
-        try
+        using (LogContext.PushProperty("CorrelationId", correlationId))
         {
-            using var responseBody = new MemoryStream();
+            var sw = Stopwatch.StartNew();
+            var originalBodyStream = context.Response.Body;
+
+            await using var responseBody = new MemoryStream();
             context.Response.Body = responseBody;
 
-            await _next(context);
+            try
+            {
+                await _next(context);
 
-            sw.Stop();
+                sw.Stop();
 
-            await LogResponseAsync(context, correlationId, sw.ElapsedMilliseconds, responseBody);
-            await responseBody.CopyToAsync(originalBodyStream);
-        }
-        catch (Exception ex)
-        {
-            sw.Stop();
-            LogException(context, correlationId, sw.ElapsedMilliseconds, ex);
-            throw;
-        }
-        finally
-        {
-            context.Response.Body = originalBodyStream;
+                LogResponse(context, sw.ElapsedMilliseconds, responseBody);
+
+                responseBody.Seek(0, SeekOrigin.Begin);
+                context.Response.ContentLength = responseBody.Length;
+
+                await responseBody.CopyToAsync(originalBodyStream);
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+
+                LogException(context, sw.ElapsedMilliseconds, ex);
+
+                context.Response.Body = originalBodyStream;
+
+                throw;
+            }
+            finally
+            {
+                context.Response.Body = originalBodyStream;
+            }
         }
     }
 
-    private async Task LogResponseAsync(
+    private void LogResponse(
         HttpContext context, 
-        string correlationId, 
         long elapsedMs,
         MemoryStream responseBody)
     {
-        var logLevel = context.Response.StatusCode >= 500 ? LogLevel.Error
-                : context.Response.StatusCode >= 400 ? LogLevel.Warning : LogLevel.Information;
-        
+        var logLevel =
+            context.Response.StatusCode >= 500 ? LogLevel.Error :
+            context.Response.StatusCode >= 400 ? LogLevel.Warning :
+            LogLevel.Information;
+
         _logger.Log(
             logLevel,
-            "Request completed: CorrelationId={CorrelationId}, Method={Method}, Path={Path}, StatusCode={StatusCode}, ElapsedMs={ElapsedMs}, ContentLength={ContentLength}",
-            correlationId,
+            "Request completed: Method={Method}, Path={Path}, StatusCode={StatusCode}, ElapsedMs={ElapsedMs}, ContentLength={ContentLength}",
             context.Request.Method,
             context.Request.Path,
             context.Response.StatusCode,
@@ -72,14 +86,12 @@ public class StructuredLoggingMiddleware
     
     private void LogException(
         HttpContext context, 
-        string correlationId, 
         long elapsedMs, 
         Exception ex)
     {
         _logger.LogError(
             ex,
-            "Request failed: CorrelationId={CorrelationId}, Method={Method}, Path={Path}, StatusCode={StatusCode}, ElapsedMs={ElapsedMs}, ExceptionType={ExceptionType}",
-            correlationId,
+            "Request failed: Method={Method}, Path={Path}, StatusCode={StatusCode}, ElapsedMs={ElapsedMs}, ExceptionType={ExceptionType}",
             context.Request.Method,
             context.Request.Path,
             context.Response.StatusCode,
